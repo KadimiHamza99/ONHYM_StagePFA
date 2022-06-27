@@ -41,7 +41,7 @@ public class DemandeServiceSi {
 	@JsonFormat(pattern="yyyy-MM-dd")
 	private LocalDate dateDemande;
 	
-	private byte etatDemande;
+	private byte etatDemande = -1;
 	
 	@JoinColumn(name = "manager",referencedColumnName="userId")
 	@ManyToOne(cascade = CascadeType.ALL, optional = true)

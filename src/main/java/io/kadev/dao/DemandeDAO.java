@@ -1,6 +1,7 @@
 package io.kadev.dao;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -18,7 +19,19 @@ public class DemandeDAO {
 	private DemandeAccesMessagerieRepository demandeAMRepository;
 	@Autowired
 	private DemandeServiceSiRepository demandeSIRepository;
+	
+	/*
+	 * Get une demande 
+	 * */
 
+	public Optional<DemandeAccesMessagerie> getDemandeAM(String id) {
+		return demandeAMRepository.findById(id);
+	}
+	
+	public Optional<DemandeServiceSi> getDemandeSI(String id) {
+		return demandeSIRepository.findById(id);
+	}
+	
 	/*
 	 * Faire une demande acces mesagerie ou service SI
 	 */
