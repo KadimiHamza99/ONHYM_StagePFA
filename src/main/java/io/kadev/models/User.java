@@ -18,10 +18,11 @@ import lombok.NoArgsConstructor;
 @Data @NoArgsConstructor @AllArgsConstructor	
 public class User {
 	@Id @GeneratedValue(strategy = GenerationType.AUTO)
-	private Long id;
+	private Long userId;
 	private String email;
 	private String username;
 	private String password;
+	
 	@ManyToMany(fetch = FetchType.EAGER)
 	private Collection<Role> roles = Arrays.asList();
 }
