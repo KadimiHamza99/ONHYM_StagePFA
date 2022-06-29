@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 public class FormInformationSI {
 	private String nom;
 	private String prenom;
+	private String societe;
 	private String cadrePartenariat;
 	private String serviceDemande;
 	@Nullable

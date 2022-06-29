@@ -29,6 +29,7 @@ public class DemandeServiceSi {
 	private String idDemandeServiceSi = UUID.randomUUID().toString();
 	private String nom;
 	private String prenom;
+	private String societe;
 	private String cadrePartenariat;
 	private String serviceDemande;
 	@Nullable
@@ -55,4 +56,7 @@ public class DemandeServiceSi {
 	@JsonFormat(pattern="yyyy-MM-dd")
 	private LocalDate dateValidationDsi;
 	
+	private boolean refuser = false;
+	@Nullable
+	private String refuseur;
 }

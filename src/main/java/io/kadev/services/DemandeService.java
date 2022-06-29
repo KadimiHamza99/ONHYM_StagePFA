@@ -18,4 +18,8 @@ public interface DemandeService {
 	void dsiValidationAM(String idDemande, String dsiUsername);
 	void managerValidationSI(String idDemande, String managerUsername);
 	void dsiValidationSI(String idDemande, String dsiUsername);
+	void managerRefusAM(String idDemande,String managerUsername);
+	void managerRefusSI(String idDemande,String managerUsername);
+	void dsiRefusAM(String idDemande,String dsiUsername);
+	void dsiRefusSI(String idDemande,String dsiUsername);
 }

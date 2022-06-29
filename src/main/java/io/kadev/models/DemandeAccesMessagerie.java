@@ -10,6 +10,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import org.springframework.lang.Nullable;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.AllArgsConstructor;
@@ -52,4 +54,8 @@ public class DemandeAccesMessagerie {
 	private User dsi;
 	@JsonFormat(pattern="yyyy-MM-dd")
 	private LocalDate dateValidationDsi;
+	
+	private boolean refuser = false;
+	@Nullable
+	private String refuseur;
 }

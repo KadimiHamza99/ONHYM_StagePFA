@@ -19,19 +19,19 @@ public class DemandeDAO {
 	private DemandeAccesMessagerieRepository demandeAMRepository;
 	@Autowired
 	private DemandeServiceSiRepository demandeSIRepository;
-	
+
 	/*
-	 * Get une demande 
-	 * */
+	 * Get une demande
+	 */
 
 	public Optional<DemandeAccesMessagerie> getDemandeAM(String id) {
 		return demandeAMRepository.findById(id);
 	}
-	
+
 	public Optional<DemandeServiceSi> getDemandeSI(String id) {
 		return demandeSIRepository.findById(id);
 	}
-	
+
 	/*
 	 * Faire une demande acces mesagerie ou service SI
 	 */
@@ -82,12 +82,10 @@ public class DemandeDAO {
 	}
 
 	public void dsiValidationDemandeAM(DemandeAccesMessagerie demande) {
-//		if(demande.getEtatDemande()== (byte)  {
 		demandeAMRepository.findById(demande.getIdDemandeAccesMessagerie()).ifPresent(d -> {
 			d.setEtatDemande((byte) 1);
 			demandeAMRepository.save(d);
 		});
-//		}
 	}
 
 	public void managerValidationDemandeSI(DemandeServiceSi demande) {
@@ -103,4 +101,66 @@ public class DemandeDAO {
 			demandeSIRepository.save(d);
 		});
 	}
+
+	public void managerRefusAM(String idDemande, String managerUsername) {
+		demandeAMRepository.findById(idDemande).ifPresent(d -> {
+			if (d.getDsi() == null) {
+				d.setManager(null);
+				d.setDsi(null);
+				d.setDateValidationDsi(null);
+				d.setDateValidationManager(null);
+				d.setEtatDemande((byte) -1);
+				d.setRefuser(true);
+				d.setRefuseur(managerUsername);
+				demandeAMRepository.save(d);
+			}
+		});
+	}
+
+	public void managerRefusSI(String idDemande, String managerUsername) {
+		demandeSIRepository.findById(idDemande).ifPresent(d -> {
+			if (d.getDsi() == null) {
+				d.setManager(null);
+				d.setDsi(null);
+				d.setDateValidationDsi(null);
+				d.setDateValidationManager(null);
+				d.setEtatDemande((byte) -1);
+				d.setRefuser(true);
+				d.setRefuseur(managerUsername);
+				demandeSIRepository.save(d);
+			}
+
+		});
+	}
+
+	public void dsiRefusAM(String idDemande, String dsiUsername) {
+		demandeAMRepository.findById(idDemande).ifPresent(d -> {
+			if (d.getDsi() == null) {
+				d.setManager(null);
+				d.setDsi(null);
+				d.setDateValidationDsi(null);
+				d.setDateValidationManager(null);
+				d.setEtatDemande((byte) -1);
+				d.setRefuser(true);
+				d.setRefuseur(dsiUsername);
+				demandeAMRepository.save(d);
+			}
+		});
+	}
+
+	public void dsiRefusSI(String idDemande, String dsiUsername) {
+		demandeSIRepository.findById(idDemande).ifPresent(d -> {
+			if (d.getDsi() == null) {
+				d.setManager(null);
+				d.setDsi(null);
+				d.setDateValidationDsi(null);
+				d.setDateValidationManager(null);
+				d.setEtatDemande((byte) -1);
+				d.setRefuser(true);
+				d.setRefuseur(dsiUsername);
+				demandeSIRepository.save(d);
+			}
+		});
+	}
+
 }
