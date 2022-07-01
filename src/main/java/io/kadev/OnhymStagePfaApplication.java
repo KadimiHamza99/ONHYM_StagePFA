@@ -29,7 +29,7 @@ public class OnhymStagePfaApplication {
 	}
 	
 	@Bean
-	CommandLineRunner start(UserServiceImpl userService,DemandeServiceImpl demandeService) {
+	CommandLineRunner start(UserServiceImpl userService,DemandeServiceImpl demandeService,EmailNotifierServiceImpl emailNotificationService) {
 		return args -> {
 //			userService.addRole(new Role(null,"DEMANDEUR"));
 //			userService.addRole(new Role(null,"MANAGER"));
@@ -87,13 +87,12 @@ public class OnhymStagePfaApplication {
 //			si.setPrenom("PREEEEEEEEEEEEENOM");
 //			si.setServiceDemande("Autres");
 //			demandeService.addDemandeSI(si, "DEMANDEUR");
-//			demandeService.managerValidationAM("96662531-3fb2-4f22-b16a-ca7d6647072b", "CHEF DIVISION");
-//			demandeService.dsiValidationAM("96662531-3fb2-4f22-b16a-ca7d6647072b", "CHEF DSI");
+//			demandeService.managerValidationAM("ee1817a1-1ab9-43da-9e03-790c52e55d35", "CHEF DIVISION");
+//			demandeService.dsiValidationAM("ee1817a1-1ab9-43da-9e03-790c52e55d35", "CHEF DSI");
 //			demandeService.managerValidationSI("dce4d1f9-bb87-4a5a-8860-c7d5ab55b7af", "CHEF DIVISION");
-			demandeService.managerRefusSI("9f89022c-a9c4-4276-92c7-3f1d85331809", "CHEF DIVISION", "NON! impossible");
+//			demandeService.managerRefusAM("ee1817a1-1ab9-43da-9e03-790c52e55d35", "CHEF DIVISION", "NON! impossible");
 //			demandeService.dsiRefusSI("dce4d1f9-bb87-4a5a-8860-c7d5ab55b7af", "CHEF DSI","IMPOSSIBLE!!");
 //			demandeService.dsiValidationSI("3fd4ceb4-67d2-493f-b102-590d9f816670", "CHEF DSI");
-			
 		};
 	}
 

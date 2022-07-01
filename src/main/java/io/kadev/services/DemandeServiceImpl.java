@@ -131,7 +131,13 @@ public class DemandeServiceImpl implements DemandeService {
 			demande.setDsi(validateur);
 			demande.setDateValidationDsi(LocalDate.now());
 			documentGeneratorService.fillValidationDsiAM(dsiUsername, idDemande);
-			emailNotificationService.notify(demande.getDemandeur().getEmail(),OBJET_AM,MESSAGE_VALIDATION+demande.getIdDemandeAccesMessagerie());
+			emailNotificationService.notifyWithAttachement(
+					demande.getDemandeur().getEmail(),
+					OBJET_AM,
+					MESSAGE_VALIDATION+demande.getIdDemandeAccesMessagerie(),
+					"./demandes/"+demande.getIdDemandeAccesMessagerie()+"DsiValidation.pdf"
+					);
+			
 			dao.dsiValidationDemandeAM(demande);
 		}
 	}
@@ -158,7 +164,13 @@ public class DemandeServiceImpl implements DemandeService {
 			demande.setDsi(validateur);
 			demande.setDateValidationDsi(LocalDate.now());
 			documentGeneratorService.fillValidationDsiSI(dsiUsername, idDemande);
-			emailNotificationService.notify(demande.getDemandeur().getEmail(),OBJET_AM,MESSAGE_VALIDATION+demande.getIdDemandeServiceSi());
+			emailNotificationService.notifyWithAttachement(
+					demande.getDemandeur().getEmail(),
+					OBJET_AM,
+					MESSAGE_VALIDATION+demande.getIdDemandeServiceSi(),
+					"./demandes/"+demande.getIdDemandeServiceSi()+"DsiValidation.pdf"
+					);
+			
 			dao.dsiValidationDemandeSI(demande);	
 		}
 	}
