@@ -14,6 +14,7 @@ import io.kadev.models.FormInformationsAM;
 import io.kadev.models.Role;
 import io.kadev.models.User;
 import io.kadev.services.DemandeServiceImpl;
+import io.kadev.services.EmailNotifierServiceImpl;
 import io.kadev.services.UserServiceImpl;
 
 @SpringBootApplication
@@ -33,10 +34,16 @@ public class OnhymStagePfaApplication {
 //			userService.addRole(new Role(null,"DEMANDEUR"));
 //			userService.addRole(new Role(null,"MANAGER"));
 //			userService.addRole(new Role(null,"DPI"));
+//			User dsi = new User(null,"hamzakadimi1999@gmail.com","CHEF DSI","1949",new ArrayList<Role>(),null,null);
+//			User manager = new User(null,"hamza.kadimi@uit.ac.ma","CHEF DIVISION","1949",new ArrayList<Role>(),null,null);
+//			User demandeur = new User(null,"hamzakadimi2019@gmail.com","DEMANDEUR","1949",new ArrayList<Role>(),null,null);
+//			userService.addUser(dsi);
+//			manager.setDsi(dsi);
+//			userService.addUser(manager);
+//			demandeur.setManager(manager);
+//			demandeur.setDsi(dsi);
+//			userService.addUser(demandeur);
 //			
-//			userService.addUser(new User(null,"hamzakadimi1999@gmail.com","CHEF DSI","1949",new ArrayList<Role>()));
-//			userService.addUser(new User(null,"hamza.kadimi@uit.ac.ma","CHEF DIVISION","1949",new ArrayList<Role>()));
-//			userService.addUser(new User(null,"hamza.kadimi@uit.ac.ma","DEMANDEUR","1949",new ArrayList<Role>()));
 //			
 //			userService.addRoleToUser("CHEF DSI", "DPI");
 //			userService.addRoleToUser("CHEF DSI", "MANAGER");
@@ -80,12 +87,12 @@ public class OnhymStagePfaApplication {
 //			si.setPrenom("PREEEEEEEEEEEEENOM");
 //			si.setServiceDemande("Autres");
 //			demandeService.addDemandeSI(si, "DEMANDEUR");
-//			demandeService.managerValidationAM("4f9e1430-3091-494d-a284-deb0e2f550e7", "CHEF DIVISION");
-//			demandeService.dsiValidationAM("4f9e1430-3091-494d-a284-deb0e2f550e7", "CHEF DSI");
-			demandeService.managerValidationSI("318b9827-e875-44f1-9691-81553cc9014b", "CHEF DIVISION");
-			demandeService.dsiRefusSI("318b9827-e875-44f1-9691-81553cc9014b", "CHEF DSI");
+//			demandeService.managerValidationAM("96662531-3fb2-4f22-b16a-ca7d6647072b", "CHEF DIVISION");
+//			demandeService.dsiValidationAM("96662531-3fb2-4f22-b16a-ca7d6647072b", "CHEF DSI");
+//			demandeService.managerValidationSI("dce4d1f9-bb87-4a5a-8860-c7d5ab55b7af", "CHEF DIVISION");
+			demandeService.managerRefusSI("9f89022c-a9c4-4276-92c7-3f1d85331809", "CHEF DIVISION", "NON! impossible");
+//			demandeService.dsiRefusSI("dce4d1f9-bb87-4a5a-8860-c7d5ab55b7af", "CHEF DSI","IMPOSSIBLE!!");
 //			demandeService.dsiValidationSI("3fd4ceb4-67d2-493f-b102-590d9f816670", "CHEF DSI");
-			
 			
 		};
 	}

@@ -1,5 +1,5 @@
 package io.kadev.services;
 
-public class EmailNotifierService {
-
+public interface EmailNotifierService {
+	void notify(String to,String objet,String message);
 }
