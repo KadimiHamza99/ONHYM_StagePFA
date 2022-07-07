@@ -12,9 +12,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.UniqueConstraint;
 
-import org.springframework.lang.Nullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -26,18 +25,22 @@ public class User {
 	@Id @GeneratedValue(strategy = GenerationType.AUTO)
 	private Long userId;
 	
-	@Column(unique = true)
+//	@Column(unique = true)
 	private String email;	
 	
 	@Column(unique = true)
 	private String username;
+	@JsonIgnore
 	private String password;
 	
 	@ManyToMany(fetch = FetchType.EAGER)
+	@JsonIgnore
 	private Collection<Role> roles = Arrays.asList();
 	
 	@ManyToOne(cascade = CascadeType.MERGE, optional = true)
+	@JsonIgnore
 	private User manager;
+	@JsonIgnore
 	@ManyToOne(cascade = CascadeType.MERGE, optional = true)
 	private User dsi;
 }

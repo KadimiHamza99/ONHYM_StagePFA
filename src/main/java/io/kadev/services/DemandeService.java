@@ -11,7 +11,9 @@ public interface DemandeService {
 	DemandeAccesMessagerie addDemandeAM(FormInformationsAM formInfo, String username);
 	DemandeServiceSi addDemandeSI(FormInformationSI formInfo, String username);
 	List<DemandeAccesMessagerie> getAllDemandesAM();
+	DemandeAccesMessagerie getDemandeAM(String idDemande);
 	List<DemandeServiceSi> getAllDemandesSI();
+	DemandeServiceSi getDemandeSI(String idDemande);
 	List<DemandeAccesMessagerie> getUserDemandesAM(String username);
 	List<DemandeServiceSi> getUserDemandeSI(String username);
 	void managerValidationAM(String idDemande, String managerUsername);
@@ -22,4 +24,5 @@ public interface DemandeService {
 	void managerRefusSI(String idDemande,String managerUsername,String messageRefus);
 	void dsiRefusAM(String idDemande,String dsiUsername,String messageRefus);
 	void dsiRefusSI(String idDemande,String dsiUsername,String messageRefus);
+	byte getEtatDemande(String idDemande);
 }

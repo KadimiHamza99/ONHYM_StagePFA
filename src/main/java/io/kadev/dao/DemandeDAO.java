@@ -162,5 +162,16 @@ public class DemandeDAO {
 			}
 		});
 	}
+	
+	public byte etatDemande(String idDemande) {
+		if(demandeSIRepository.findById(idDemande).isPresent()) {
+			DemandeServiceSi demande = demandeSIRepository.findById(idDemande).orElseThrow();
+			return demande.getEtatDemande();
+		}else if(demandeAMRepository.findById(idDemande).isPresent()) {
+			DemandeAccesMessagerie demande = demandeAMRepository.findById(idDemande).orElseThrow();
+			return demande.getEtatDemande();
+		}
+		return Byte.MAX_VALUE;
+	}
 
 }

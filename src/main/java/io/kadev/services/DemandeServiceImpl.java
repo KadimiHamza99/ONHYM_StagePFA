@@ -14,7 +14,6 @@ import io.kadev.models.DemandeServiceSi;
 import io.kadev.models.FormInformationSI;
 import io.kadev.models.FormInformationsAM;
 import io.kadev.models.User;
-import io.kadev.repositories.UserRepository;
 
 @Service
 @Transactional
@@ -22,8 +21,8 @@ public class DemandeServiceImpl implements DemandeService {
 
 	@Autowired
 	private DemandeDAO dao;
-	@Autowired
-	private UserRepository userRepository;
+	@Autowired 
+	private UserServiceImpl userService;
 	@Autowired
 	private DocumentsGeneratorServiceImpl documentGeneratorService;
 	@Autowired
@@ -41,13 +40,7 @@ public class DemandeServiceImpl implements DemandeService {
 	@Override
 	public DemandeAccesMessagerie addDemandeAM(FormInformationsAM formInfo, String username) {
 		DemandeAccesMessagerie demande = new DemandeAccesMessagerie();
-		User demandeur = userRepository.findByUsername(username);
-		demandeur.getRoles().stream().forEach(role -> {
-			if (role.getName().equals("MANAGER")) {
-				demande.setEtatDemande((byte) 0);
-				this.managerValidationAM(demande.getIdDemandeAccesMessagerie(), username);
-			}
-		});
+		User demandeur = userService.getUser(username);
 		demande.setNom(formInfo.getNom());
 		demande.setPrenom(formInfo.getPrenom());
 		demande.setMatricule(formInfo.getMatricule());
@@ -60,20 +53,26 @@ public class DemandeServiceImpl implements DemandeService {
 		demande.setDateDemande(LocalDate.now());
 		documentGeneratorService.fillDemandeAccesMessagerie(formInfo, demande.getIdDemandeAccesMessagerie());
 		emailNotificationService.notify(demandeur.getEmail(),OBJET_AM,MESSAGE_DEMANDEUR+demande.getIdDemandeAccesMessagerie());
-		emailNotificationService.notify(demandeur.getManager().getEmail(),OBJET_AM,MESSAGE_VALIDATEUR+demandeur.getUsername());
+		try {
+			emailNotificationService.notify(demandeur.getManager().getEmail(),OBJET_AM,MESSAGE_VALIDATEUR+demandeur.getUsername());
+		}catch(Exception e) {
+			demandeur.getRoles().stream().forEach(role -> {
+				if (role.getName().equals("MANAGER")) {
+					demande.setManager(demandeur);
+					demande.setDateValidationManager(LocalDate.now());
+					demande.setEtatDemande((byte)0);
+					documentGeneratorService.fillValidationManagerAM(username, demande.getIdDemandeAccesMessagerie());
+					emailNotificationService.notify(demandeur.getDsi().getEmail(),OBJET_AM,MESSAGE_VALIDATEUR+demandeur.getUsername());
+				}
+			});
+		}
 		return dao.addDemandeAM(demande);
 	}
 
 	@Override
 	public DemandeServiceSi addDemandeSI(FormInformationSI formInfo, String username) {
 		DemandeServiceSi demande = new DemandeServiceSi();
-		User demandeur = userRepository.findByUsername(username);
-		demandeur.getRoles().stream().forEach(role -> {
-			if (role.getName().equals("MANAGER")) {
-				demande.setEtatDemande((byte) 0);
-				this.managerValidationSI(demande.getIdDemandeServiceSi(), username);
-			}
-		});
+		User demandeur = userService.getUser(username);
 		demande.setNom(formInfo.getNom());
 		demande.setPrenom(formInfo.getPrenom());
 		demande.setSociete(formInfo.getSociete());
@@ -85,7 +84,19 @@ public class DemandeServiceImpl implements DemandeService {
 		demande.setDateDemande(LocalDate.now());
 		documentGeneratorService.fillDemandeServiceSI(formInfo, demande.getIdDemandeServiceSi());
 		emailNotificationService.notify(demandeur.getEmail(),OBJET_SI,MESSAGE_DEMANDEUR+demande.getIdDemandeServiceSi());
-		emailNotificationService.notify(demandeur.getManager().getEmail(),OBJET_SI,MESSAGE_VALIDATEUR+demandeur.getUsername());
+		try {
+			emailNotificationService.notify(demandeur.getManager().getEmail(),OBJET_SI,MESSAGE_VALIDATEUR+demandeur.getUsername());
+		}catch(Exception e) {
+			demandeur.getRoles().stream().forEach(role -> {
+				if (role.getName().equals("MANAGER")) {
+					demande.setManager(demandeur);
+					demande.setDateValidationManager(LocalDate.now());
+					demande.setEtatDemande((byte)0);
+					documentGeneratorService.fillValidationManagerAM(username, demande.getIdDemandeServiceSi());
+					emailNotificationService.notify(demandeur.getDsi().getEmail(),OBJET_SI,MESSAGE_VALIDATEUR+demandeur.getUsername());
+				}
+			});
+		}
 		return dao.addDemandeSI(demande);
 	}
 
@@ -101,19 +112,30 @@ public class DemandeServiceImpl implements DemandeService {
 
 	@Override
 	public List<DemandeAccesMessagerie> getUserDemandesAM(String username) {
-		return dao.getDemandesAM(userRepository.findByUsername(username));
+		return dao.getDemandesAM(userService.getUser(username));
 	}
 
 	@Override
 	public List<DemandeServiceSi> getUserDemandeSI(String username) {
-		return dao.getDemandesSI(userRepository.findByUsername(username));
+		return dao.getDemandesSI(userService.getUser(username));
 	}
 
 	@Override
+	public DemandeAccesMessagerie getDemandeAM(String idDemande) {
+		return dao.getDemandeAM(idDemande).orElseThrow();
+	}
+
+	@Override
+	public DemandeServiceSi getDemandeSI(String idDemande) {
+		return dao.getDemandeSI(idDemande).orElseThrow();
+	}
+	
+	@Override
 	public void managerValidationAM(String idDemande, String managerUsername) {
 		DemandeAccesMessagerie demande = dao.getDemandeAM(idDemande).orElseThrow();
-		User validateur = userRepository.findByUsername(managerUsername);
-		if (demande.getManager() == null && demande.getDemandeur().getManager() == validateur) {
+		User validateur = userService.getUser(managerUsername);
+		if (demande.getManager() == null 
+				&& demande.getDemandeur().getManager() == validateur && !demande.isRefuser()) {
 			demande.setManager(validateur);
 			demande.setDateValidationManager(LocalDate.now());
 			documentGeneratorService.fillValidationManagerAM(managerUsername, idDemande);
@@ -126,8 +148,9 @@ public class DemandeServiceImpl implements DemandeService {
 	@Override
 	public void dsiValidationAM(String idDemande, String dsiUsername) {
 		DemandeAccesMessagerie demande = dao.getDemandeAM(idDemande).orElseThrow();
-		User validateur = userRepository.findByUsername(dsiUsername);
-		if (demande.getDsi() == null && demande.getDemandeur().getDsi() == validateur) {
+		User validateur = userService.getUser(dsiUsername);
+		if (demande.getDsi() == null 
+				&& demande.getDemandeur().getDsi() == validateur && !demande.isRefuser()) {
 			demande.setDsi(validateur);
 			demande.setDateValidationDsi(LocalDate.now());
 			documentGeneratorService.fillValidationDsiAM(dsiUsername, idDemande);
@@ -145,8 +168,9 @@ public class DemandeServiceImpl implements DemandeService {
 	@Override
 	public void managerValidationSI(String idDemande, String managerUsername) {
 		DemandeServiceSi demande = dao.getDemandeSI(idDemande).orElseThrow();
-		User validateur = userRepository.findByUsername(managerUsername);
-		if (demande.getManager() == null && demande.getDemandeur().getManager() == validateur) {
+		User validateur = userService.getUser(managerUsername);
+		if (demande.getManager() == null 
+				&& demande.getDemandeur().getManager() == validateur && !demande.isRefuser()) {
 			demande.setManager(validateur);
 			demande.setDateValidationManager(LocalDate.now());
 			documentGeneratorService.fillValidationManagerSI(managerUsername, idDemande);
@@ -159,8 +183,9 @@ public class DemandeServiceImpl implements DemandeService {
 	@Override
 	public void dsiValidationSI(String idDemande, String dsiUsername) {
 		DemandeServiceSi demande = dao.getDemandeSI(idDemande).orElseThrow();
-		User validateur = userRepository.findByUsername(dsiUsername);
-		if (demande.getDsi() == null && demande.getDemandeur().getDsi() == validateur) {
+		User validateur = userService.getUser(dsiUsername);
+		if (demande.getDsi() == null 
+				&& demande.getDemandeur().getDsi() == validateur && !demande.isRefuser()) {
 			demande.setDsi(validateur);
 			demande.setDateValidationDsi(LocalDate.now());
 			documentGeneratorService.fillValidationDsiSI(dsiUsername, idDemande);
@@ -178,29 +203,46 @@ public class DemandeServiceImpl implements DemandeService {
 	@Override
 	public void managerRefusAM(String idDemande, String managerUsername,String messageRefus) {
 		DemandeAccesMessagerie demande = dao.getDemandeAM(idDemande).orElseThrow();
-		dao.managerRefusAM(idDemande, managerUsername);
-		emailNotificationService.notify(demande.getDemandeur().getEmail(),OBJET_AM,MESSAGE_REFUS+messageRefus+" REFUSER PAR => "+demande.getRefuseur());
+		User refuseur = userService.getUser(managerUsername);
+		if(demande.getManager()==null && demande.getDemandeur().getManager()==refuseur && demande.getEtatDemande()==(byte)-1) {
+			dao.managerRefusAM(idDemande, managerUsername);
+			emailNotificationService.notify(demande.getDemandeur().getEmail(),OBJET_AM,MESSAGE_REFUS+messageRefus+" REFUSER PAR => "+demande.getRefuseur());
+		}
 	}
 
 	@Override
 	public void managerRefusSI(String idDemande, String managerUsername,String messageRefus) {
 		DemandeServiceSi demande = dao.getDemandeSI(idDemande).orElseThrow();
-		dao.managerRefusSI(idDemande, managerUsername);
-		emailNotificationService.notify(demande.getDemandeur().getEmail(),OBJET_SI,MESSAGE_REFUS+messageRefus+" REFUSER PAR => "+demande.getRefuseur());
-	}
+		User refuseur = userService.getUser(managerUsername);
+		if(demande.getManager()==null && demande.getDemandeur().getManager()==refuseur  && demande.getEtatDemande()==(byte)-1) {
+			dao.managerRefusSI(idDemande, managerUsername);
+			emailNotificationService.notify(demande.getDemandeur().getEmail(),OBJET_SI,MESSAGE_REFUS+messageRefus+" REFUSER PAR => "+demande.getRefuseur());
+		}
+	}	
 
 	@Override
 	public void dsiRefusAM(String idDemande, String dsiUsername,String messageRefus) {
 		DemandeAccesMessagerie demande = dao.getDemandeAM(idDemande).orElseThrow();
-		dao.dsiRefusAM(idDemande, dsiUsername);
-		emailNotificationService.notify(demande.getDemandeur().getEmail(),OBJET_AM,MESSAGE_REFUS+messageRefus+" REFUSER PAR => "+demande.getRefuseur());
+		User refuseur = userService.getUser(dsiUsername);
+		if(demande.getDsi()==null && demande.getDemandeur().getDsi()==refuseur && demande.getEtatDemande()!=(byte)1) {
+			dao.dsiRefusAM(idDemande, dsiUsername);
+			emailNotificationService.notify(demande.getDemandeur().getEmail(),OBJET_AM,MESSAGE_REFUS+messageRefus+" REFUSER PAR => "+demande.getRefuseur());
+		}
 	}
 
 	@Override
 	public void dsiRefusSI(String idDemande, String dsiUsername,String messageRefus) {
 		DemandeServiceSi demande = dao.getDemandeSI(idDemande).orElseThrow();
-		dao.dsiRefusSI(idDemande, dsiUsername);
-		emailNotificationService.notify(demande.getDemandeur().getEmail(),OBJET_SI,MESSAGE_REFUS+messageRefus+" REFUSER PAR => "+demande.getRefuseur());
+		User refuseur = userService.getUser(dsiUsername);
+		if(demande.getDsi()==null && demande.getDemandeur().getDsi()==refuseur && demande.getEtatDemande()!=(byte)1) {
+			dao.dsiRefusSI(idDemande, dsiUsername);
+			emailNotificationService.notify(demande.getDemandeur().getEmail(),OBJET_SI,MESSAGE_REFUS+messageRefus+" REFUSER PAR => "+demande.getRefuseur());
+		}
+	}
+	
+	@Override
+	public byte getEtatDemande(String idDemande) {
+		return dao.etatDemande(idDemande);
 	}
 
 }
