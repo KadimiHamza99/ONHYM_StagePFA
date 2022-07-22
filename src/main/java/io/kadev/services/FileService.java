@@ -15,7 +15,6 @@ public class FileService {
 	    private String filesPath;
 
 	    public Resource download(String filename) {
-	    	System.out.println(filesPath);
 	        try {
 	            Path file = Paths.get(filesPath)
 	                             .resolve(filename);

@@ -2,6 +2,7 @@ package io.kadev.services;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import javax.transaction.Transactional;
 
@@ -13,8 +14,11 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.itextpdf.text.log.SysoCounter;
+
 import io.kadev.models.Role;
 import io.kadev.models.User;
+import io.kadev.models.UserForm;
 import io.kadev.repositories.RoleRepository;
 import io.kadev.repositories.UserRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -75,4 +79,42 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 		log.info("Adding new role");
 		return roleRepository.save(role);
 	}
+
+	@Override
+	public User updateUser(UserForm userUpdate) {
+		User user = userRepository.findByUsername(userUpdate.getUsername());
+		user.setDsi(this.getUser(userUpdate.getDsi()));
+		user.setEmail(userUpdate.getEmail());
+		user.setManager(this.getUser(userUpdate.getManager()));
+		user.setState(userUpdate.getState());
+		user.setStateDate(userUpdate.getStateDate());
+		user.getRoles().removeAll(user.getRoles());
+		if(userUpdate.getRoles()!=null) {
+			userUpdate.getRoles().forEach(role->{
+				this.addRoleToUser(userUpdate.getUsername(), role);
+			});
+		}
+		return userRepository.save(user);
+	}
+
+	@Override
+	public List<User> getAllUsers() {
+		return userRepository.findAll();
+	}
+
+	@Override
+	public String changePassword(String username, String password) {
+		User user = userRepository.findByUsername(username);
+		String hashedPassword = passwordEncoder.encode(password);
+		user.setPassword(hashedPassword);
+		userRepository.save(user);
+		return "Le mot de passe est changé !";
+	}
+
+	@Override
+	public User getUserById(Long id) {
+		// TODO Auto-generated method stub
+		return userRepository.findById(id).orElseThrow();
+	}
+	
 }

@@ -34,13 +34,14 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter{
 		http.cors();	
 		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 		http.authorizeRequests().antMatchers("/login").permitAll();
+		http.authorizeRequests().antMatchers("/configuration/admin/**").hasAuthority("ADMIN");
 		http.authorizeRequests().antMatchers("/validation/dpi/**").hasAuthority("DPI");
 		http.authorizeRequests().antMatchers("/refus/dpi/**").hasAuthority("DPI");
-		http.authorizeRequests().antMatchers("/validation/manager/**").hasAuthority("MANAGER");
-		http.authorizeRequests().antMatchers("/refus/manager/**").hasAuthority("MANAGER");
+		http.authorizeRequests().antMatchers("/validation/manager/**").hasAnyAuthority("MANAGER","DSI","DPI");
+		http.authorizeRequests().antMatchers("/refus/manager/**").hasAnyAuthority("MANAGER","DSI","DPI");
 		http.authorizeRequests().antMatchers("/demande/**").hasAuthority("DEMANDEUR");
-		http.authorizeRequests().antMatchers("/public/**").hasAnyAuthority("DEMANDEUR","DPI","MANAGER");
-		http.authorizeRequests().antMatchers("/private/**").hasAnyAuthority("DPI","MANAGER");
+		http.authorizeRequests().antMatchers("/public/**").hasAnyAuthority("DEMANDEUR","DPI","MANAGER","DSI");
+		http.authorizeRequests().antMatchers("/private/**").hasAnyAuthority("DPI","MANAGER","DSI");
 		http.authorizeRequests().anyRequest().authenticated();
 		http.addFilter(new CustomAuthenticationFilter(authenticationManagerBean()));
 		http.addFilterBefore(new CustomAuthorizationFilter(),UsernamePasswordAuthenticationFilter.class);

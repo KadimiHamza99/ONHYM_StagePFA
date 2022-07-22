@@ -53,19 +53,7 @@ public class DemandeServiceImpl implements DemandeService {
 		demande.setDateDemande(LocalDate.now());
 		documentGeneratorService.fillDemandeAccesMessagerie(formInfo, demande.getIdDemandeAccesMessagerie());
 		emailNotificationService.notify(demandeur.getEmail(),OBJET_AM,MESSAGE_DEMANDEUR+demande.getIdDemandeAccesMessagerie());
-		try {
-			emailNotificationService.notify(demandeur.getManager().getEmail(),OBJET_AM,MESSAGE_VALIDATEUR+demandeur.getUsername());
-		}catch(Exception e) {
-			demandeur.getRoles().stream().forEach(role -> {
-				if (role.getName().equals("MANAGER")) {
-					demande.setManager(demandeur);
-					demande.setDateValidationManager(LocalDate.now());
-					demande.setEtatDemande((byte)0);
-					documentGeneratorService.fillValidationManagerAM(username, demande.getIdDemandeAccesMessagerie());
-					emailNotificationService.notify(demandeur.getDsi().getEmail(),OBJET_AM,MESSAGE_VALIDATEUR+demandeur.getUsername());
-				}
-			});
-		}
+		emailNotificationService.notify(demandeur.getManager().getEmail(),OBJET_AM,MESSAGE_VALIDATEUR+demandeur.getUsername());
 		return dao.addDemandeAM(demande);
 	}
 
@@ -84,19 +72,7 @@ public class DemandeServiceImpl implements DemandeService {
 		demande.setDateDemande(LocalDate.now());
 		documentGeneratorService.fillDemandeServiceSI(formInfo, demande.getIdDemandeServiceSi());
 		emailNotificationService.notify(demandeur.getEmail(),OBJET_SI,MESSAGE_DEMANDEUR+demande.getIdDemandeServiceSi());
-		try {
-			emailNotificationService.notify(demandeur.getManager().getEmail(),OBJET_SI,MESSAGE_VALIDATEUR+demandeur.getUsername());
-		}catch(Exception e) {
-			demandeur.getRoles().stream().forEach(role -> {
-				if (role.getName().equals("MANAGER")) {
-					demande.setManager(demandeur);
-					demande.setDateValidationManager(LocalDate.now());
-					demande.setEtatDemande((byte)0);
-					documentGeneratorService.fillValidationManagerAM(username, demande.getIdDemandeServiceSi());
-					emailNotificationService.notify(demandeur.getDsi().getEmail(),OBJET_SI,MESSAGE_VALIDATEUR+demandeur.getUsername());
-				}
-			});
-		}
+		emailNotificationService.notify(demandeur.getManager().getEmail(),OBJET_SI,MESSAGE_VALIDATEUR+demandeur.getUsername());
 		return dao.addDemandeSI(demande);
 	}
 
@@ -139,7 +115,25 @@ public class DemandeServiceImpl implements DemandeService {
 			demande.setManager(validateur);
 			demande.setDateValidationManager(LocalDate.now());
 			documentGeneratorService.fillValidationManagerAM(managerUsername, idDemande);
-			emailNotificationService.notify(demande.getDemandeur().getDsi().getEmail(),OBJET_AM,MESSAGE_VALIDATEUR+demande.getDemandeur().getUsername());
+			try {
+				emailNotificationService.notify(demande.getDemandeur().getDsi().getEmail(),OBJET_AM,MESSAGE_VALIDATEUR+demande.getDemandeur().getUsername());	
+			}catch(Exception e) {
+				demande.getDemandeur().getRoles().stream().forEach(role -> {
+					if (role.getName().equals("DPI")) {
+						demande.setDsi(demande.getDemandeur());
+						demande.setDateValidationDsi(LocalDate.now());
+						demande.setEtatDemande((byte)1);
+						documentGeneratorService.fillValidationDsiAM(demande.getDemandeur().getUsername(),
+																		demande.getIdDemandeAccesMessagerie());
+						emailNotificationService.notifyWithAttachement(
+								demande.getDemandeur().getEmail(),
+								OBJET_AM,
+								MESSAGE_VALIDATION+demande.getIdDemandeAccesMessagerie(),
+								"./demandes/"+demande.getIdDemandeAccesMessagerie()+"DsiValidation.pdf"
+						);
+					}
+				});
+			}
 			dao.managerValidationDemandeAM(demande);
 		}
 
@@ -174,7 +168,25 @@ public class DemandeServiceImpl implements DemandeService {
 			demande.setManager(validateur);
 			demande.setDateValidationManager(LocalDate.now());
 			documentGeneratorService.fillValidationManagerSI(managerUsername, idDemande);
-			emailNotificationService.notify(demande.getDemandeur().getDsi().getEmail(),OBJET_SI,MESSAGE_VALIDATEUR+demande.getDemandeur().getUsername());
+			try {
+				emailNotificationService.notify(demande.getDemandeur().getDsi().getEmail(),OBJET_SI,MESSAGE_VALIDATEUR+demande.getDemandeur().getUsername());
+			}catch(Exception e) {
+				demande.getDemandeur().getRoles().stream().forEach(role -> {
+					if (role.getName().equals("DPI")) {
+						demande.setDsi(demande.getDemandeur());
+						demande.setDateValidationDsi(LocalDate.now());
+						demande.setEtatDemande((byte)1);
+						documentGeneratorService.fillValidationDsiSI(demande.getDemandeur().getUsername(),
+																		demande.getIdDemandeServiceSi());
+						emailNotificationService.notifyWithAttachement(
+								demande.getDemandeur().getEmail(),
+								OBJET_AM,
+								MESSAGE_VALIDATION+demande.getIdDemandeServiceSi(),
+								"./demandes/"+demande.getIdDemandeServiceSi()+"DsiValidation.pdf"
+						);
+					}
+				});
+			}
 			dao.managerValidationDemandeSI(demande);
 		}
 		

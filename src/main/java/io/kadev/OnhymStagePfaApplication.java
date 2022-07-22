@@ -1,7 +1,5 @@
 package io.kadev;
 
-import java.util.ArrayList;
-
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -11,8 +9,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import io.kadev.models.FormInformationSI;
-import io.kadev.models.FormInformationsAM;
 import io.kadev.models.Role;
 import io.kadev.models.User;
 import io.kadev.services.DemandeServiceImpl;
@@ -46,38 +42,47 @@ public class OnhymStagePfaApplication {
 //			userService.addRole(new Role(null,"DEMANDEUR"));
 //			userService.addRole(new Role(null,"MANAGER"));
 //			userService.addRole(new Role(null,"DPI"));
-//			
-//			User dsi1 = new User(null,"hamzakadimi1999@gmail.com","CHEF DSI 1","1949",new ArrayList<Role>(),null,null);
-//			User manager1 = new User(null,"hamza.kadimi@uit.ac.ma","CHEF DIVISION 1","1949",new ArrayList<Role>(),null,null);
-//			User demandeur1 = new User(null,"hamzakadimi2019@gmail.com","DEMANDEUR 1","1949",new ArrayList<Role>(),null,null);
-//			User dsi2 = new User(null,"hamzakadimi1999@gmail.com","CHEF DSI 2","1949",new ArrayList<Role>(),null,null);
-//			User manager2 = new User(null,"hamza.kadimi@uit.ac.ma","CHEF DIVISION 2","1949",new ArrayList<Role>(),null,null);
-//			User demandeur2 = new User(null,"hamzakadimi2019@gmail.com","DEMANDEUR 2","1949",new ArrayList<Role>(),null,null);
-//			
-//			userService.addUser(dsi1);
-//			manager1.setDsi(dsi1);
-//			userService.addUser(manager1);
-//			demandeur1.setManager(manager1);
-//			demandeur1.setDsi(dsi1);
+//			userService.addRole(new Role(null,"DSI"));
+//			userService.addRole(new Role(null,"ADMIN"));
+//			User admin = new User("hamzakadimi1999@gmail.com","ADMIN","ADMIN");
+//			userService.addUser(admin);
+//			userService.addRoleToUser("ADMIN", "ADMIN");
+//			List<String> roles = Arrays.asList(new String[] {"DEMANDEUR"});
+//			UserForm userUpdate = new UserForm("DEMANDEUR2","hamzakadimi2019@gmail.com",roles,"MANAGER","DPI",(byte)0,LocalDate.now());
+//			userService.updateUser(userUpdate);
+			
+//			User dsi = new User("hamzakadimi1999@gmail.com","DSI","1949",null,null,null);
+//			userService.addUser(dsi);
+//			userService.addRoleToUser("DSI", "DSI");
+			
+//			User dsi = new User(null,"hamzakadimi1999@gmail.com",LocalDate.now(),"DSI","1949",null,null,null,(byte) 1,LocalDate.now());
+//			User dpi = new User(null,"hamza.kadimi@uit.ac.ma",LocalDate.now(),"DPI","1949",null,null,null,(byte) 1,LocalDate.now());
+//			User manager = new User(null,"hamzakadimi2019@gmail.com",LocalDate.now(),"MANAGER","1949",null,null,null,(byte) 1,LocalDate.now());
+//			User demandeur1 = new User(null,"hamzakadimi2019@gmail.com",LocalDate.now(),"DEMANDEUR1","1949",null,null,null,(byte) 1,LocalDate.now());
+//			User demandeur2 = new User(null,"hamzakadimi2019@gmail.com",LocalDate.now(),"DEMANDEUR2","1949",null,null,null,(byte) 1,LocalDate.now());
+//			userService.addUser(dsi);
+//			dpi.setManager(dsi);
+//			dpi.setDsi(dpi);
+//			userService.addUser(dpi);
+//			manager.setManager(manager);
+//			manager.setDsi(dpi);
+//			userService.addUser(manager);
+//			demandeur1.setManager(manager);
+//			demandeur1.setDsi(dpi);
 //			userService.addUser(demandeur1);
-//			
-//			userService.addUser(dsi2);
-//			manager2.setDsi(dsi2);
-//			userService.addUser(manager2);
-//			demandeur2.setManager(manager2);
-//			demandeur2.setDsi(dsi2);
+//			demandeur2.setManager(manager);
+//			demandeur2.setDsi(dpi);
 //			userService.addUser(demandeur2);
-//			
-//			
-//			userService.addRoleToUser("CHEF DSI 1", "DPI");
-//			userService.addRoleToUser("CHEF DIVISION 1", "MANAGER");
-//			userService.addRoleToUser("CHEF DIVISION 1", "DEMANDEUR");
-//			userService.addRoleToUser("DEMANDEUR 1", "DEMANDEUR");
-//			
-//			userService.addRoleToUser("CHEF DSI 2", "DPI");
-//			userService.addRoleToUser("CHEF DIVISION 2", "MANAGER");
-//			userService.addRoleToUser("CHEF DIVISION 2", "DEMANDEUR");
-//			userService.addRoleToUser("DEMANDEUR 2", "DEMANDEUR");
+//
+//			userService.addRoleToUser("DSI", "DSI");
+//			userService.addRoleToUser("DPI", "DPI");
+//			userService.addRoleToUser("DPI", "DEMANDEUR");
+//			userService.addRoleToUser("DPI", "MANAGER");
+//			userService.addRoleToUser("MANAGER", "MANAGER");
+//			userService.addRoleToUser("MANAGER", "DEMANDEUR");
+//			userService.addRoleToUser("DEMANDEUR1", "DEMANDEUR");
+//			userService.addRoleToUser("DEMANDEUR2", "DEMANDEUR");
+//
 //			
 //			
 //			/*
@@ -103,9 +108,9 @@ public class OnhymStagePfaApplication {
 //			si.setNom("Nom");
 //			si.setPrecisionServiceDemande("Precision");
 //			si.setPrenom("Prenom");
-//			si.setServiceDemande("Autres");
+//			si.setServiceDemande("Application de gestion");
+//			si.setPrecisionServiceDemande("ONHYM SERVICES");
 //			demandeService.addDemandeSI(si, "DEMANDEUR 2");
-
 //			demandeService.managerValidationAM("16eafcf9-af81-4077-bab3-b6ca78ae9264", "CHEF DIVISION 2");
 //			demandeService.dsiValidationAM("4d8425a1-a368-4d12-882d-598a7db584cb", "CHEF DSI 1");
 //			demandeService.dsiRefusAM("16eafcf9-af81-4077-bab3-b6ca78ae9264","CHEF DIVISION 2", "REFUSER");

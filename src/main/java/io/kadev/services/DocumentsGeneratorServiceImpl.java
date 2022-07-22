@@ -1,5 +1,6 @@
 package io.kadev.services;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.time.LocalDate;
 
@@ -24,7 +25,7 @@ public class DocumentsGeneratorServiceImpl implements DocumentsGeneratorService 
 		try {
 			PdfReader pdfReader = new PdfReader("DemandeAccesMobile.pdf");
 			PdfStamper pdfStamper = new PdfStamper(pdfReader, new FileOutputStream("./demandes/" + idDemande + ".pdf"));
-			BaseFont baseFont = BaseFont.createFont(BaseFont.TIMES_ROMAN, BaseFont.CP1252, BaseFont.NOT_EMBEDDED);
+			BaseFont baseFont = BaseFont.createFont(BaseFont.HELVETICA, BaseFont.CP1252, BaseFont.NOT_EMBEDDED);
 			PdfContentByte pageContentByte = pdfStamper.getOverContent(1);
 
 			pageContentByte.beginText();
@@ -70,7 +71,7 @@ public class DocumentsGeneratorServiceImpl implements DocumentsGeneratorService 
 			pageContentByte.endText();
 
 			pdfStamper.close();
-
+			pdfReader.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -82,7 +83,7 @@ public class DocumentsGeneratorServiceImpl implements DocumentsGeneratorService 
 		try {
 			PdfReader pdfReader = new PdfReader("DemandeServiceSI.pdf");
 			PdfStamper pdfStamper = new PdfStamper(pdfReader, new FileOutputStream("./demandes/" + idDemande + ".pdf"));
-			BaseFont baseFont = BaseFont.createFont(BaseFont.TIMES_ROMAN, BaseFont.CP1252, BaseFont.NOT_EMBEDDED);
+			BaseFont baseFont = BaseFont.createFont(BaseFont.HELVETICA, BaseFont.CP1252, BaseFont.NOT_EMBEDDED);
 			PdfContentByte pageContentByte = pdfStamper.getOverContent(1);
 			pageContentByte.beginText();
 			pageContentByte.setFontAndSize(baseFont, 10);
@@ -202,6 +203,7 @@ public class DocumentsGeneratorServiceImpl implements DocumentsGeneratorService 
 			pageContentByte.endText();
 
 			pdfStamper.close();
+			pdfReader.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -229,6 +231,12 @@ public class DocumentsGeneratorServiceImpl implements DocumentsGeneratorService 
 			pageContentByte.endText();
 
 			pdfStamper.close();
+			pdfReader.close();
+			File file = new File("demandes/"+idDemande+".pdf");
+			if(file.exists()) {
+				System.out.println(file.getAbsolutePath());
+				file.delete();
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -254,6 +262,12 @@ public class DocumentsGeneratorServiceImpl implements DocumentsGeneratorService 
 			pageContentByte.showText(nom);
 			pageContentByte.endText();
 			pdfStamper.close();
+			pdfReader.close();
+			File file = new File("demandes/"+idDemande+"Managervalidation.pdf");
+			if(file.exists()) {
+				System.out.println(file.getAbsolutePath());
+				file.delete();
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -280,6 +294,8 @@ public class DocumentsGeneratorServiceImpl implements DocumentsGeneratorService 
 			pageContentByte.endText();
 			pageContentByte.endText();
 			pdfStamper.close();
+			pdfReader.close();
+			boolean t = new File("./demandes/" + idDemande + ".pdf").delete();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -305,6 +321,11 @@ public class DocumentsGeneratorServiceImpl implements DocumentsGeneratorService 
 			pageContentByte.showText(nom);
 			pageContentByte.endText();
 			pdfStamper.close();
+			pdfReader.close();
+			File file = new File("./demandes/" + idDemande + "Managervalidation.pdf");
+			if(file.exists()) {
+				file.delete();
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
