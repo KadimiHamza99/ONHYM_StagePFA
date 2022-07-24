@@ -89,10 +89,12 @@ public class DemandeDAO {
 	}
 
 	public void managerValidationDemandeSI(DemandeServiceSi demande) {
-		demandeSIRepository.findById(demande.getIdDemandeServiceSi()).ifPresent(d -> {
-			d.setEtatDemande((byte) 0);
-			demandeSIRepository.save(d);
-		});
+		if (demande.getEtatDemande() == -1) {
+			demandeSIRepository.findById(demande.getIdDemandeServiceSi()).ifPresent(d -> {
+				d.setEtatDemande((byte) 0);
+				demandeSIRepository.save(d);
+			});
+		}
 	}
 
 	public void dsiValidationDemandeSI(DemandeServiceSi demande) {
@@ -162,12 +164,12 @@ public class DemandeDAO {
 			}
 		});
 	}
-	
+
 	public byte etatDemande(String idDemande) {
-		if(demandeSIRepository.findById(idDemande).isPresent()) {
+		if (demandeSIRepository.findById(idDemande).isPresent()) {
 			DemandeServiceSi demande = demandeSIRepository.findById(idDemande).orElseThrow();
 			return demande.getEtatDemande();
-		}else if(demandeAMRepository.findById(idDemande).isPresent()) {
+		} else if (demandeAMRepository.findById(idDemande).isPresent()) {
 			DemandeAccesMessagerie demande = demandeAMRepository.findById(idDemande).orElseThrow();
 			return demande.getEtatDemande();
 		}

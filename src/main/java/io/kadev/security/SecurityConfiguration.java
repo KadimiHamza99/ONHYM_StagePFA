@@ -41,7 +41,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter{
 		http.authorizeRequests().antMatchers("/refus/manager/**").hasAnyAuthority("MANAGER","DSI","DPI");
 		http.authorizeRequests().antMatchers("/demande/**").hasAuthority("DEMANDEUR");
 		http.authorizeRequests().antMatchers("/public/**").hasAnyAuthority("DEMANDEUR","DPI","MANAGER","DSI");
-		http.authorizeRequests().antMatchers("/private/**").hasAnyAuthority("DPI","MANAGER","DSI");
+		http.authorizeRequests().antMatchers("/private/**").hasAnyAuthority("DPI","MANAGER","DSI","DEMANDEUR");
 		http.authorizeRequests().anyRequest().authenticated();
 		http.addFilter(new CustomAuthenticationFilter(authenticationManagerBean()));
 		http.addFilterBefore(new CustomAuthorizationFilter(),UsernamePasswordAuthenticationFilter.class);
